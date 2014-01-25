@@ -5,5 +5,5 @@
 	path = ark
 	url = https://github.com/bryanwb/chef-ark
 [submodule "custom_env"]
-	path = custom_env
+	path = opsworks_custom_env
 	url = https://github.com/joeyAghion/opsworks_custom_env
