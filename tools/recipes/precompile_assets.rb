@@ -4,7 +4,7 @@
 rails_env = new_resource.environment["RAILS_ENV"]
 Chef::Log.info("Precompiling assets for RAILS_ENV=#{rails_env}...")
 
-Chef::Log.info("ENV: #{node[:custom_env][:portfoliobuilder].merge({RAILS_ENV: rails_env}).inspect}")
+Chef::Log.info("ENV: #{node[:custom_env][:portfoliobuilder].inspect}")
 
 bash "rake assets:precompile" do
   cwd release_path  
