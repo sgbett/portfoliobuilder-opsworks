@@ -5,7 +5,7 @@ maintainer_email "sgbett@remailer.org"
 license          "GPL"
 description      "misc recipes for portfoliobuilder"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.markdown'))
-version          "0"
+version          "0.1"
 
 # recommends 'build-essential'
 # recommends 'xml'
