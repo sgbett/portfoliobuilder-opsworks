@@ -4,6 +4,7 @@
 #
 
 include_recipe "deploy"
+include_recipe "sidekiq"
 
 node[:deploy].each do |application, deploy|
   if deploy[:application_type] != 'rails'
