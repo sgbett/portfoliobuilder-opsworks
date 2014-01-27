@@ -38,10 +38,10 @@ end
 def start_sidekiq
   if File.exists?("#{ROOT_PATH}/current/Gemfile")
     puts "OpsWorks: Gemfile detected - running Sidekiq with bundle exec"
-    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && /usr/local/bin/bundle exec sidekiq --env <%= @deploy[:rails_env] %>"
+    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && /usr/local/bin/bundle exec sidekiq -d -L /var/log/sidekiq.log --env <%= @deploy[:rails_env] %>"
   else
     puts "OpsWorks: no Gemfile detected - running plain Sidekiq"
-    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && sidekiq --env <%= @deploy[:rails_env] %>"
+    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && sidekiq  -d -L /var/log/sidekiq.log --env <%= @deploy[:rails_env] %>"
   end
 end
 
