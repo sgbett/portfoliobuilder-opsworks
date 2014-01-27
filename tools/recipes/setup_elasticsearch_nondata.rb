@@ -1,4 +1,3 @@
-include_recipe 'java'
 include_recipe 'elasticsearch::default'
 include_recipe 'elasticsearch::aws'
 
