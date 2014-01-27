@@ -4,7 +4,7 @@ require 'digest/md5'
 
 ROOT_PATH="<%= @deploy[:deploy_to] %>"
 APP_NAME="<%= @application %>"
-PID_PATH="<%= @deploy[:deploy_to] %>/shared/pids/unicorn.pid"
+PID_PATH="<%= @deploy[:deploy_to] %>/shared/pids/sidekiq.pid"
 
 def run_and_print_command(command)
   puts command
@@ -16,7 +16,7 @@ def run_and_ignore_exitcode_and_print_command(command)
   system(command)
 end
 
-def unicorn_running?
+def sidekiq_running?
   if File.exists?(PID_PATH) && (pid = File.read(PID_PATH).chomp) && system("ps aux | grep #{pid} | grep -v grep > /dev/null")
     pid
   else
@@ -35,47 +35,47 @@ def different_gemfile?
   false
 end
 
-def start_unicorn
+def start_sidekiq
   if File.exists?("#{ROOT_PATH}/current/Gemfile")
     puts "OpsWorks: Gemfile detected - running Sidekiq with bundle exec"
-    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && /usr/local/bin/bundle exec unicorn_rails --env <%= @deploy[:rails_env] %> --daemonize -c #{ROOT_PATH}/shared/config/unicorn.conf"
+    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && /usr/local/bin/bundle exec sidekiq --env <%= @deploy[:rails_env] %> --daemonize -c #{ROOT_PATH}/shared/config/sidekiq.conf"
   else
     puts "OpsWorks: no Gemfile detected - running plain Sidekiq"
-    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && unicorn_rails --env <%= @deploy[:rails_env] %> --daemonize -c #{ROOT_PATH}/shared/config/unicorn.conf"
+    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && sidekiq --env <%= @deploy[:rails_env] %> --daemonize -c #{ROOT_PATH}/shared/config/sidekiq.conf"
   end
 end
 
-def stop_unicorn
-  if unicorn_running?
+def stop_sidekiq
+  if sidekiq_running?
     if run_and_ignore_exitcode_and_print_command "kill -QUIT `cat #{PID_PATH}`"
       `rm #{PID_PATH}`
     end
   else
-    puts "You can't stop unicorn, because it's not running"
+    puts "You can't stop sidekiq, because it's not running"
   end
 end
 
-def restart_unicorn
-        if unicorn_running?
+def restart_sidekiq
+        if sidekiq_running?
                 run_and_ignore_exitcode_and_print_command "kill -USR2 `cat #{PID_PATH}`"
         else
-                start_unicorn
+                start_sidekiq
         end
 end
 
 def clean_restart
   if different_gemfile?
     puts "Found a previous version with a different Gemfile: Doing a stop & start"
-    stop_unicorn if unicorn_running?
-    start_unicorn
+    stop_sidekiq if sidekiq_running?
+    start_sidekiq
   else
     puts "No previous version with a different Gemfile found. Assuming a quick restart without re-loading gems is save"
-    restart_unicorn
+    restart_sidekiq
   end
 end
 
-def status_unicorn
-        if pid = unicorn_running?
+def status_sidekiq
+        if pid = sidekiq_running?
                 puts "Sidekiq <%= @application %> running with PID #{pid}"
                 return true
         else
@@ -87,14 +87,14 @@ end
 case ARGV[0]
 when "start"
   puts "Starting Sidekiq #{APP_NAME}"
-  start_unicorn
+  start_sidekiq
 when "stop"
   puts "Stopping Sidekiq #{APP_NAME}"
-  stop_unicorn
+  stop_sidekiq
 when "status"
-  status_unicorn
+  status_sidekiq
 when "restart"
-  restart_unicorn
+  restart_sidekiq
 when "clean-restart"
   clean_restart
 else
