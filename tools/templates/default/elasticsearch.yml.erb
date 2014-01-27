@@ -22,10 +22,23 @@
 #################################### Node #####################################
 
 <%= print_value 'node.name' -%>
-node.master: false
-node.data: false
+#<%= print_value 'node.master' -%>
+#<%= print_value 'node.data' -%>
+<%= print_value 'node.max_local_storage_nodes' -%>
+
+#################################### Index ####################################
+
+<%= print_value 'index.number_of_shards' -%>
+<%= print_value 'index.number_of_replicas' -%>
+<%= print_value 'index.auto_expand_replicas' -%>
+<%= print_value 'index.mapper.dynamic' -%>
+<%= print_value 'action.auto_create_index' -%>
+<%= print_value 'action.disable_delete_all_indices' -%>
+
+#################################### Paths ####################################
 
 <%= print_value 'path.conf' -%>
+<%= print_value 'path.data', (node.elasticsearch.path.data.is_a?(Array) ? node.elasticsearch.path.data.join(",") : node.elasticsearch.path.data) -%>
 <%= print_value 'path.work' -%>
 <%= print_value 'path.logs' -%>
 <%= print_value 'path.plugins' -%>
@@ -43,7 +56,7 @@ node.data: false
 
 <%= print_value 'network.bind_host' -%>
 <%= print_value 'network.publish_host' -%>
-<%= print_value 'network.host' -%>
+#<%= print_value 'network.host' -%>
 <%= print_value 'transport.tcp.port' -%>
 <%= print_value 'transport.tcp.compress' -%>
 <%= print_value 'http.host' -%>
@@ -69,6 +82,11 @@ node.data: false
 
 <%= print_value 'discovery.type', node.elasticsearch[:discovery][:type] -%>
 
+<%= print_value 'discovery.zen.minimum_master_nodes' -%>
+<%= print_value 'discovery.zen.ping.timeout' -%>
+<%= print_value 'discovery.zen.ping.multicast.enabled' -%>
+<%= print_value 'discovery.zen.ping.unicast.hosts' -%>
+
 <%- if node.elasticsearch[:cloud] -%>
 <%= print_value 'cloud.node.auto_attributes' -%>
 <%= print_value 'cloud.aws.access_key' -%>
@@ -76,5 +94,57 @@ node.data: false
 <%= print_value 'cloud.aws.region' -%>
 <%= print_value 'cloud.aws.ec2.endpoint' -%>
 <%= print_value 'discovery.ec2.groups' -%>
+<%= print_value 'discovery.ec2.host_type' -%>
+<%= print_value 'discovery.ec2.availability_zones' -%>
+<%= print_value 'discovery.ec2.any_group' -%>
 <%= print_value 'discovery.ec2.ping_timeout' -%>
+<%- node.elasticsearch[:discovery][:ec2][:tag].sort.each do |key, value| -%>
+discovery.ec2.tag.<%= key %>: <%= value %>
+<%- end unless node.elasticsearch[:discovery][:ec2][:tag].keys.empty? rescue false -%>
 <%- end -%>
+
+################################## Slow Log ###################################
+
+<%= print_value 'index.search.slowlog.threshold.query.warn' -%>
+<%= print_value 'index.search.slowlog.threshold.query.info' -%>
+<%= print_value 'index.search.slowlog.threshold.query.debug' -%>
+<%= print_value 'index.search.slowlog.threshold.query.trace' -%>
+<%=                                                          -%>
+<%= print_value 'index.search.slowlog.threshold.fetch.warn' -%>
+<%= print_value 'index.search.slowlog.threshold.fetch.info' -%>
+<%= print_value 'index.search.slowlog.threshold.fetch.debug' -%>
+<%= print_value 'index.search.slowlog.threshold.fetch.trace' -%>
+<%=                                                          -%>
+<%= print_value 'index.indexing.slowlog.threshold.index.warn' -%>
+<%= print_value 'index.indexing.slowlog.threshold.index.info' -%>
+<%= print_value 'index.indexing.slowlog.threshold.index.debug' -%>
+<%= print_value 'index.indexing.slowlog.threshold.index.trace' -%>
+
+################################## GC Logging #################################
+
+<%= print_value 'monitor.jvm.gc.ParNew.warn' -%>
+<%= print_value 'monitor.jvm.gc.ParNew.info' -%>
+<%= print_value 'monitor.jvm.gc.ParNew.debug' -%>
+<%=                                           -%>
+<%= print_value 'monitor.jvm.gc.ConcurrentMarkSweep.warn' -%>
+<%= print_value 'monitor.jvm.gc.ConcurrentMarkSweep.info' -%>
+<%= print_value 'monitor.jvm.gc.ConcurrentMarkSweep.debug' -%>
+
+################################## JMX ########################################
+
+<%- if node.elasticsearch[:jmx] -%>
+jmx.create_connector: true
+jmx.port: 9400-9500
+jmx.domain: elasticsearch
+<%- end -%>
+
+################################## Custom #####################################
+
+<% node.elasticsearch[:custom_config].sort.each do |key, value| %>
+<%= key %>: <%= value %>
+<% end %>
+
+# nondata config for rails app servers
+
+node.master: false
+node.data: false
