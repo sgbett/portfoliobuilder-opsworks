@@ -8,5 +8,5 @@
 	path = opsworks_custom_env
 	url = https://github.com/joeyAghion/opsworks_custom_env
 [submodule "newrelic"]
-	path = newrelic
+	path = newrelic-sysmond
 	url = https://github.com/phlipper/chef-newrelic-sysmond
