@@ -28,7 +28,7 @@ server {
     }
 
     # serve correct CORS header for font assets
-    if ($filename ~* ^.*?\.(eot)|(ttf)|(woff)$){
+    if ($request_filename ~* ^.*?\.(eot)|(ttf)|(woff)$){
       add_header Access-Control-Allow-Origin *;
     }
 
