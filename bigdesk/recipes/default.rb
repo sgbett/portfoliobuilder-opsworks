@@ -1,1 +1,1 @@
-install_plugin "lukas-vlcek/bigdesk"
+install_plugin "lukas-vlcek/bigdesk/2.2.3" # supports 0.90.x http://bigdesk.org/v/
