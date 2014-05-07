@@ -1,4 +1,4 @@
-name             "sidekiq"
+name             "bigdesk"
 
 maintainer       "sgbett"
 maintainer_email "sgbett@remailer.org"
