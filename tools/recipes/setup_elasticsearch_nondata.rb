@@ -3,7 +3,7 @@ include_recipe 'elasticsearch::aws'
 
 node.normal[:elasticsearch][:allocated_memory] = "1200m"
 
-# re-reate ES config file with our 'router' template
+# re-create ES config file with our 'router' template
 #
 template "elasticsearch.yml" do
   path   "#{node.elasticsearch[:path][:conf]}/elasticsearch.yml"
