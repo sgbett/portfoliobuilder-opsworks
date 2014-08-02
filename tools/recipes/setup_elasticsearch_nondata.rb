@@ -1,7 +1,7 @@
 include_recipe 'elasticsearch::default'
 include_recipe 'elasticsearch::aws'
 
-node.normal[:elasticsearch][:allocated_memory] = "1200m"
+node.normal[:elasticsearch][:allocated_memory] = "512m"
 
 # re-create ES config file with our 'router' template
 #
