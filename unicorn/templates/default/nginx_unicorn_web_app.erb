@@ -84,6 +84,12 @@ server {
       proxy_pass http://unicorn_<%= @application[:domains].first %>;
       break;
     }
+
+    # serve correct CORS header for font assets
+    if ($request_filename ~* ^.*?\.(eot)|(ttf)|(woff)$){
+      add_header Access-Control-Allow-Origin *;
+    }
+
   }
 
   error_page 500 502 503 504 /500.html;
