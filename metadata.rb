@@ -7,7 +7,7 @@ description      "custom cookbook for portfoliobuilder opsworks stack"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.markdown'))
 version          "0.0.1"
 
-provides 'bigdesk'
-provides 'tools'
-provides 'kopf'
-provides 'sidekiq'
+depends 'bigdesk'
+depends 'tools'
+depends 'kopf'
+depends 'sidekiq'
