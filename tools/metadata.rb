@@ -9,5 +9,6 @@ version          "0.0.2"
 
 depends 'elasticsearch'
 
+provides 'tools'
 provides 'tools::precompile_assets'
 provides 'tools::setup_elasticsearch_nondata'
