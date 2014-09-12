@@ -34,7 +34,6 @@ server {
   <% if @application[:nginx] && @application[:nginx][:client_max_body_size] %>
     client_max_body_size <%= @application[:nginx][:client_max_body_size] %>;
   <% end %>
-
   gzip                      on;
   gzip_http_version         1.0;
   gzip_disable              "msie6";
@@ -45,11 +44,10 @@ server {
   gzip_proxied              any;
   gzip_types                text/plain text/css application/x-javascript text/xml application/xml;
 
-  location ~ ^/assets/ {
-    gzip_static on;
+  location ~ ^/(assets)/ {
+    gzip_static on; # to serve pre-gzipped version
     expires max;
-    add_header        Last-Modified "";
-    add_header        ETag "";
+    add_header Cache-Control public;
   }
 
   location / {
