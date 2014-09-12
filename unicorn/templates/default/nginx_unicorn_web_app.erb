@@ -7,61 +7,11 @@ server {
 
   server_name <%= @application[:domains].join(" ") %> <%= node[:hostname] %>;
 
-  rewrite     ^   https://$host$request_uri? permanent;
+  rewrite     ^(.*) https://$host$1 permanent;
 
   access_log <%= node[:nginx][:log_dir] %>/<%= @application[:domains].first %>.access.log;
+  error_log <%= node[:nginx][:log_dir] %>/<%= @application[:domains].first %>.error.log;
 
-  keepalive_timeout 5;
-
-  root <%= @application[:absolute_document_root] %>;
-
-  <% if @application[:nginx] && @application[:nginx][:client_max_body_size] %>
-    client_max_body_size <%= @application[:nginx][:client_max_body_size] %>;
-  <% end %>
-
-  location ~ ^/assets/ {
-    gzip_static on;
-    
-    add_header Cache-Control public;
-    expires 4w;
-    gzip on;
-    gzip_vary on;
-    gzip_proxied any;
-    gzip_disable "MSIE [1-6]\.";
-    gzip_comp_level 3;
-    gzip_types application/x-javascript text/css image/png;
-  }
-
-  location / {
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header Host $http_host;
-    proxy_redirect off;
-
-    # If you don't find the filename in the static files
-    # Then request it from the unicorn server
-    if (!-f $request_filename) {
-      proxy_pass http://unicorn_<%= @application[:domains].first %>;
-      break;
-    }
-
-    # serve correct CORS header for font assets
-    if ($request_filename ~* ^.*?\.(eot)|(ttf)|(woff)$){
-      add_header Access-Control-Allow-Origin *;
-    }
-
-  }
-
-  location /nginx_status {
-    stub_status on;
-    access_log off;
-    allow 127.0.0.1;
-    deny all;
-  }
-
-  error_page 500 502 503 504 /500.html;
-  location = /500.html {
-    root <%= @application[:absolute_document_root] %>;
-  }
 }
 
 <% if @application[:ssl_support] %>
@@ -85,17 +35,21 @@ server {
     client_max_body_size <%= @application[:nginx][:client_max_body_size] %>;
   <% end %>
 
+  gzip                      on;
+  gzip_http_version         1.0;
+  gzip_disable              "msie6";
+  gzip_vary                 on;
+  gzip_min_length           1100;
+  gzip_buffers              64 8k;
+  gzip_comp_level           3;
+  gzip_proxied              any;
+  gzip_types                text/plain text/css application/x-javascript text/xml application/xml;
+
   location ~ ^/assets/ {
     gzip_static on;
-    
-    add_header Cache-Control public;
-    expires 4w;
-    gzip on;
-    gzip_vary on;
-    gzip_proxied any;
-    gzip_disable "MSIE [1-6]\.";
-    gzip_comp_level 3;
-    gzip_types application/x-javascript text/css image/png;
+    expires max;
+    add_header        Last-Modified "";
+    add_header        ETag "";
   }
 
   location / {
