@@ -1,16 +1,5 @@
-ssl_certificate /etc/nginx/ssl/<%= @application[:domains].first %>.crt;
-ssl_certificate_key /etc/nginx/ssl/<%= @application[:domains].first %>.key;
-<% if @application[:ssl_certificate_ca] -%>
-ssl_client_certificate /etc/nginx/ssl/<%= @application[:domains].first %>.ca;
-<% end -%>
-
 upstream unicorn_<%= @application[:domains].first %> {
  server unix:<%= @application[:deploy_to]%>/shared/sockets/unicorn.sock fail_timeout=0;
-}
-
-server {
-  server_name "~^www\.(.*)$" ;
-  return 301 $scheme://$1$request_uri ;
 }
 
 server {
@@ -20,11 +9,18 @@ server {
 
 <% if @application[:ssl_support] %>
 server {
-  listen 443 ssl;
+  listen *:443 ssl;
+  
   server_name <%= @application[:domains].join(" ") %> <%= node[:hostname] %>;
 
   access_log <%= node[:nginx][:log_dir] %>/<%= @application[:domains].first %>-ssl.access.log;
   error_log <%= node[:nginx][:log_dir] %>/<%= @application[:domains].first %>-ssl.error.log;
+
+  ssl_certificate /etc/nginx/ssl/<%= @application[:domains].first %>.crt;
+  ssl_certificate_key /etc/nginx/ssl/<%= @application[:domains].first %>.key;
+  <% if @application[:ssl_certificate_ca] -%>
+  ssl_client_certificate /etc/nginx/ssl/<%= @application[:domains].first %>.ca;
+  <% end -%>
   
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 
