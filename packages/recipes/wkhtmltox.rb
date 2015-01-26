@@ -1,4 +1,4 @@
-PROJECT_MIRROR='http://www.mirrorservice.org/sites/download.sourceforge.net/pub/sourceforge/w/wk/wkhtmltopdf'
+MIRROR='http://www.mirrorservice.org/sites/download.sourceforge.net/pub/sourceforge/w/wk/wkhtmltopdf'
 VERSION='0.12.2.1'
 
 remote_file "/tmp/wkhtmltox-#{VERSION}_linux-precise-amd64.deb" do
