@@ -1,8 +1,9 @@
-MIRROR='http://www.mirrorservice.org/sites/download.sourceforge.net/pub/sourceforge/w/wk/wkhtmltopdf'
-VERSION='0.12.2.1'
+MIRROR='http://www.mirrorservice.org'
+LOCATION='sites/download.sourceforge.net/pub/sourceforge/w/wk/wkhtmltopdf/0.12.2.1'
+VERSION='0.12.2.2'
 
 remote_file "/tmp/wkhtmltox-#{VERSION}_linux-precise-amd64.deb" do
-  source "#{MIRROR}/#{VERSION}/wkhtmltox-#{VERSION}_linux-precise-amd64.deb"
+  source "#{MIRROR}/#{LOCATION}/wkhtmltox-#{VERSION}_linux-precise-amd64.deb"
   mode 0644
 #  checksum "242ace909f22c4f8e4f58a59cc4319b96ea47ac3440b27c2a58081be8b840eb1"
 end
