@@ -1,6 +1,6 @@
-MIRROR='http://www.mirrorservice.org'
-LOCATION='sites/download.sourceforge.net/pub/sourceforge/w/wk/wkhtmltopdf/0.12.2.1'
-VERSION='0.12.2.2'
+MIRROR='https://s3-eu-west-1.amazonaws.com'
+LOCATION='portfoliobuilder-eu'
+VERSION='0.12.2.1'
 
 remote_file "/tmp/wkhtmltox-#{VERSION}_linux-precise-amd64.deb" do
   source "#{MIRROR}/#{LOCATION}/wkhtmltox-#{VERSION}_linux-precise-amd64.deb"
