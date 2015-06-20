@@ -56,11 +56,9 @@ def stop_sidekiq
 end
 
 def restart_sidekiq
-        if sidekiq_running?
-                run_and_ignore_exitcode_and_print_command "kill -USR2 `cat #{PID_PATH}`"
-        else
-                start_sidekiq
-        end
+  #force stop and start to release file handles that may get deleted after N deploys
+  stop_sidekiq if sidekiq_running?
+  start_sidekiq
 end
 
 def clean_restart
