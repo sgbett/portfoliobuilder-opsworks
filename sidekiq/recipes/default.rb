@@ -1,6 +1,14 @@
 # setup Sidekiq service per app
 node[:deploy].each do |application, deploy|
 
+  directory "#{deploy[:deploy_to]}/shared/scripts" do
+    mode '0755'
+    recursive true
+    owner deploy[:user]
+    group deploy[:group]
+    action :create
+  end
+
   template "#{deploy[:deploy_to]}/shared/scripts/sidekiq" do
     mode '0755'
     owner deploy[:user]
