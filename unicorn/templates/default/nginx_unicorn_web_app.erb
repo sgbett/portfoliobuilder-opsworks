@@ -67,6 +67,10 @@ server {
 
   }
 
+  location ~ ^/ae(.*)$ {
+    return 301 https://$host;
+  }
+
   error_page 500 502 503 504 /500.html;
   location = /500.html {
     root <%= @application[:absolute_document_root] %>;
