@@ -16,6 +16,13 @@ node[:deploy].each do |application, deploy|
     source "sidekiq.service.erb"
     variables(:deploy => deploy, :application => application)
   end
+
+  template "/etc/logrotate.d/sidekiq" do
+    mode '0755'
+    owner deploy[:user]
+    group deploy[:group]
+    source "logrotate.conf"
+  end
     
   service "sidekiq" do
     start_command "#{deploy[:deploy_to]}/shared/scripts/sidekiq start"
