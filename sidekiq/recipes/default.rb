@@ -1,6 +1,11 @@
 # setup Sidekiq service per app
 node[:deploy].each do |application, deploy|
 
+  execute 'reload_monit' do
+    command '/usr/bin/monit reload'
+    action :nothing
+  end
+
   directory "#{deploy[:deploy_to]}/shared/scripts" do
     mode '0755'
     recursive true
@@ -22,6 +27,14 @@ node[:deploy].each do |application, deploy|
     owner 'root'
     group 'root'
     source "logrotate.conf"
+  end
+
+  template "/etc/monit/conf.d/sidekiq.monitrc" do
+    mode '0440'
+    owner 'root'
+    group 'root'
+    source "sidekiq.monitrc"
+    notifies :run, 'execute[reload_monit]', :immediately
   end
     
   service "sidekiq" do

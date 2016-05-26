@@ -1,0 +1,6 @@
+check process sidekiq
+  with pidfile /srv/www/portfoliobuilder/shared/pids/sidekiq.pid
+  start program = "/srv/www/portfoliobuilder/shared/scripts/sidekiq start > /var/log/sidekiq.log 2>&1"
+  restart program = "/srv/www/portfoliobuilder/shared/scripts/sidekiq restart > /var/log/sidekiq.log 2>&1"
+  stop program = "/srv/www/portfoliobuilder/shared/scripts/sidekiq stop > /var/log/sidekiq.log 2>&1"
+  if totalmem is greater than 768 MB for 3 cycles then restart
