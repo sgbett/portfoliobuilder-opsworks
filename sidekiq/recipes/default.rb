@@ -18,9 +18,9 @@ node[:deploy].each do |application, deploy|
   end
 
   template "/etc/logrotate.d/sidekiq" do
-    mode '0755'
-    owner deploy[:user]
-    group deploy[:group]
+    mode '0440'
+    owner 'root'
+    group 'root'
     source "logrotate.conf"
   end
     
