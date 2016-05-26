@@ -2,6 +2,7 @@
 node[:deploy].each do |application, deploy|
 
   execute 'reload_monit' do
+    user 'root'
     command '/usr/bin/monit reload'
     action :nothing
   end
