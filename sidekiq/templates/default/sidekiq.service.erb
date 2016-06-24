@@ -36,12 +36,18 @@ def different_gemfile?
 end
 
 def start_sidekiq
+  <% 
+    args = ["-de #{@deploy[:rails_env]}"] 
+    args << "-L #{node[:sidekiq][:config][:log]}"
+    args << "-c #{node[:sidekiq][:config][:concurrency]}" unless node[:sidekiq][:config][:concurrency].blank?
+    args << node[:sidekiq][:config][:queues].split(',').map{|q| "-q #{q}"}.join(' ') unless node[:sidekiq][:config][:queues].blank?
+  %>
   if File.exists?("#{ROOT_PATH}/current/Gemfile")
-    puts "OpsWorks: Gemfile detected - running Sidekiq with bundle exec"
-    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && /usr/local/bin/bundle exec sidekiq -d -P #{PID_PATH} -L /var/log/sidekiq.log --env <%= @deploy[:rails_env] %>"
+    puts "OpsWorks: Gemfile detected - running Sidekiq with bundle exec, args: <%= args.join(' ') %>"
+    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && /usr/local/bin/bundle exec sidekiq <%= args.join(' ') %> -P #{PID_PATH}"
   else
-    puts "OpsWorks: no Gemfile detected - running plain Sidekiq"
-    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && sidekiq  -d -P #{PID_PATH} -L /var/log/sidekiq.log --env <%= @deploy[:rails_env] %>"
+    puts "OpsWorks: no Gemfile detected - running plain Sidekiq, args: <%= args.join(' ') %>"
+    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && sidekiq <%= args.join(' ') %> -P #{PID_PATH}"
   end
 end
 
