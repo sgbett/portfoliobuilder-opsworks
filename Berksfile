@@ -6,3 +6,4 @@ cookbook 'build-essential', '= 3.2.0' # upgrade to 4 broke with compat_resource 
 cookbook 'elasticsearch', '= 0.3.13'
 cookbook 'newrelic-sysmond'
 cookbook 'opsworks_custom_env', git: 'git://github.com/sgbett/opsworks_custom_env.git'
+cookbook 'windows, '=2.0.2' #another pinned dependancy to work around https://github.com/aws/opsworks-cookbooks/issues/383
