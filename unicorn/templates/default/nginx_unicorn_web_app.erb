@@ -71,9 +71,9 @@ server {
       add_header Access-Control-Allow-Origin *;
     }
 
-    # rate limiting to prevent brute forcing certain urls
-    location ~ /(login|password)$ {
-      limit_req zone=auth burst=5 nodelay;
+    # rate limiting to prevent brute forcing certain urls - burst is 2 for the double clickers!
+    location ~ /(login|password|nomination/.*)$ {
+      limit_req zone=auth burst=2 nodelay;
       proxy_pass http://unicorn_portfoliobuilder;
     }
 
