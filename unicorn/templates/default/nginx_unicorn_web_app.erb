@@ -87,6 +87,10 @@ server {
     return 404;
   }
 
+  location ~ ^/SkyNet(.*)$ {
+    return 444;
+  }
+
   error_page 429 /429.html;
   error_page 500 502 503 504 /500.html;
 
