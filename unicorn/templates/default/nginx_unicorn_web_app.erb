@@ -13,7 +13,7 @@ server {
 <% if @application[:ssl_support] %>
 server {
   listen *:443 ssl;
-  
+
   server_name <%= @application[:domains].join(" ") %> <%= node[:hostname] %>;
 
   access_log <%= node[:nginx][:log_dir] %>/<%= @application[:domains].first %>-ssl.access.log;
@@ -24,14 +24,14 @@ server {
   <% if @application[:ssl_certificate_ca] -%>
   ssl_client_certificate /etc/nginx/ssl/<%= @application[:domains].first %>.ca;
   <% end -%>
-  
+
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 
   keepalive_timeout 5;
-  
+
   limit_req zone=default burst=20 nodelay;
   limit_req_status 429;
-  
+
   root <%= @application[:absolute_document_root] %>;
 
   <% if @application[:nginx] && @application[:nginx][:client_max_body_size] %>
@@ -67,7 +67,7 @@ server {
     }
 
     # serve correct CORS header for font assets
-    if ($request_filename ~* ^.*?\.(eot)|(ttf)|(woff)$){
+    location ~* \.(eot|svg|ttf|woff|woff2)$ {
       add_header Access-Control-Allow-Origin *;
     }
 
@@ -97,7 +97,6 @@ server {
   location ~ ^/(429|500).html$ {
     root <%= @application[:absolute_document_root] %>;
   }
-  
+
 }
 <% end %>
-
