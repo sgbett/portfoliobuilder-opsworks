@@ -87,8 +87,17 @@ server {
     return 404;
   }
 
+  # HTTP444 - Connection Closed Without Response
+  # used to drop connection without response for malicious actors
+
+  #invalid URI
   location ~ ^/SkyNet(.*)$ {
     return 444;
+  }
+
+  #disrespectful bots
+  if ($http_user_agent ~* (mj12bot|semrush]) ) {
+      return 444;
   }
 
   error_page 429 /429.html;
