@@ -96,7 +96,7 @@ server {
   }
 
   #disrespectful bots
-  if ($http_user_agent ~* (mj12bot|semrush]) ) {
+  if ($http_user_agent ~* (mj12bot|semrush) ) {
       return 444;
   }
 
