@@ -6,16 +6,6 @@ ROOT_PATH="<%= @deploy[:deploy_to] %>"
 APP_NAME="<%= @application %>"
 PID_PATH="<%= @deploy[:deploy_to] %>/shared/pids/sidekiq.pid"
 
-def run_and_print_command(command)
-  puts command
-  system(command) || exit(1)
-end
-
-def run_and_ignore_exitcode_and_print_command(command)
-  puts command
-  system(command)
-end
-
 def sidekiq_running?
   if File.exists?(PID_PATH) && (pid = File.read(PID_PATH).chomp) && system("ps aux | grep #{pid} | grep -v grep > /dev/null")
     pid
@@ -36,24 +26,22 @@ def different_gemfile?
 end
 
 def start_sidekiq
-  <% 
-    args = ["-de #{@deploy[:rails_env]}"] 
+  <%
+    args = ["-de #{@deploy[:rails_env]}"]
     args << "-L #{node[:sidekiq][:config][:log]}"
     args << "-c #{node[:sidekiq][:config][:concurrency]}" unless node[:sidekiq][:config][:concurrency].blank?
     args << node[:sidekiq][:config][:queues].split(',').map{|q| "-q #{q}"}.join(' ') unless node[:sidekiq][:config][:queues].blank?
   %>
   if File.exists?("#{ROOT_PATH}/current/Gemfile")
-    puts "OpsWorks: Gemfile detected - running Sidekiq with bundle exec, args: <%= args.join(' ') %>"
-    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && /usr/local/bin/bundle exec sidekiq <%= args.join(' ') %> -P #{PID_PATH}"
+    system "cd #{ROOT_PATH}/current && /usr/local/bin/bundle exec sidekiq <%= args.join(' ') %> -P #{PID_PATH}"
   else
-    puts "OpsWorks: no Gemfile detected - running plain Sidekiq, args: <%= args.join(' ') %>"
-    run_and_ignore_exitcode_and_print_command "cd #{ROOT_PATH}/current && sidekiq <%= args.join(' ') %> -P #{PID_PATH}"
+    system "cd #{ROOT_PATH}/current && sidekiq <%= args.join(' ') %> -P #{PID_PATH}"
   end
 end
 
 def stop_sidekiq
   if sidekiq_running?
-    if run_and_ignore_exitcode_and_print_command "kill -QUIT `cat #{PID_PATH}`"
+    if system "kill -QUIT `cat #{PID_PATH}`"
       `rm #{PID_PATH}`
     end
   else
@@ -62,8 +50,10 @@ def stop_sidekiq
 end
 
 def restart_sidekiq
-  #force stop and start to release file handles that may get deleted after N deploys
-  stop_sidekiq if sidekiq_running?
+  # addresses Errno::ENOENT: No such file or directory - getcwd
+  # in lib/modules/domain_config.rb:   23:in `setup_domain_config'
+  # where stale sidekiq daemon is running in removed folder, which PID based method in stop_sidekiq missess
+  system "ps -ef | egrep 'sidekiq [\.0-9]* portfoliobuilder' | awk '{print $2}' | xargs -r kill -TERM"
   start_sidekiq
 end
 

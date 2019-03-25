@@ -15,15 +15,5 @@ node[:deploy].each do |application, deploy|
   service "sidekiq" do
     action :restart
   end
-  
-#   execute "restart sidekiq" do
-#     cwd deploy[:current_path]
-#     command "sidekiq restart"
-#     action :run
-#     
-#     only_if do 
-#       File.exists?(deploy[:current_path])
-#     end
-#   end
-    
+      
 end
